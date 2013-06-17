@@ -4547,21 +4547,21 @@ status_t QueryCodec(
             profileLevel.mLevel = param.eLevel;
 
             caps->mProfileLevels.push(profileLevel);
-        }
 
-        // Color format query
-        // return colors in the order reported by the OMX component
-        // prefix "flexible" standard ones with the flexible equivalent
-        OMX_VIDEO_PARAM_PORTFORMATTYPE portFormat;
-        InitOMXParams(&portFormat);
-        portFormat.nPortIndex = !isEncoder ? 1 : 0;
-        for (portFormat.nIndex = 0;; ++portFormat.nIndex)  {
-            err = omx->getParameter(
-                    node, OMX_IndexParamVideoPortFormat,
-                    &portFormat, sizeof(portFormat));
-            if (err != OK) {
-                break;
-            }
+	    // Color format query
+	    // return colors in the order reported by the OMX component
+	    // prefix "flexible" standard ones with the flexible equivalent
+	    OMX_VIDEO_PARAM_PORTFORMATTYPE portFormat;
+	    InitOMXParams(&portFormat);
+	    portFormat.nPortIndex = !isEncoder ? 1 : 0;
+	    for (OMX_U32 index = 0;;index++)  {
+	        portFormat.nIndex = index;
+	        err = omx->getParameter(
+	                node, OMX_IndexParamVideoPortFormat,
+	                &portFormat, sizeof(portFormat));
+	        if (err != OK) {
+	            break;
+	        }
 
             OMX_U32 flexibleEquivalent;
             if (ACodec::isFlexibleColorFormat(
