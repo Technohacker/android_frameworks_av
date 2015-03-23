@@ -4575,26 +4575,29 @@ status_t QueryCodec(
                     node, OMX_IndexParamVideoProfileLevelQuerySupported,
                     &param, sizeof(param));
 
-            if (err != OK) {
-                break;
-            }
+        if (err != OK) {
+            break;
+        }
 
-            CodecProfileLevel profileLevel;
-            profileLevel.mProfile = param.eProfile;
-            profileLevel.mLevel = param.eLevel;
+        CodecProfileLevel profileLevel;
+        profileLevel.mProfile = param.eProfile;
+        profileLevel.mLevel = param.eLevel;
 
-            caps->mProfileLevels.push(profileLevel);
+        caps->mProfileLevels.push(profileLevel);
+    }
 
-	    // Color format query
-	    // return colors in the order reported by the OMX component
-	    // prefix "flexible" standard ones with the flexible equivalent
-	    OMX_VIDEO_PARAM_PORTFORMATTYPE portFormat;
-	    InitOMXParams(&portFormat);
-	#ifdef OMAP_ENHANCEMENT
-   	    portFormat.nPortIndex = !isEncoder ? 0 : 1;
-	#else
-	    portFormat.nPortIndex = !isEncoder ? 1 : 0;
-	#endif
+    // Color format query
+    // return colors in the order reported by the OMX component
+    // prefix "flexible" standard ones with the flexible equivalent
+    OMX_VIDEO_PARAM_PORTFORMATTYPE portFormat;
+    InitOMXParams(&portFormat);
+#ifdef OMAP_ENHANCEMENT
+    if(!IsSoftwareCodec(componentName))
+        portFormat.nPortIndex = !isEncoder ? 0 : 1;
+    else
+#endif
+    portFormat.nPortIndex = !isEncoder ? 1 : 0;
+
 	    for (OMX_U32 index = 0;;index++)  {
 	        portFormat.nIndex = index;
 	        err = omx->getParameter(
